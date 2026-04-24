@@ -1,0 +1,11 @@
+{
+  "name": "Radar Fusion",
+  "domains": ["radar_fusion"],
+  "documentation": "https://github.com/PaulGalm/HA-Radar-Fusion",
+  "issue_tracker": "https://github.com/PaulGalm/HA-Radar-Fusion/issues",
+  "requirements": [],
+  "render_readme": true,
+  "category": "integration",
+  "iot_class": "local_polling",
+  "quality_scale": "bronze"
+}
