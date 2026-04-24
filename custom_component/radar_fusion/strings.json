@@ -2,20 +2,78 @@
   "config": {
     "step": {
       "user": {
+        "title": "Select ESPHome Radar Sensors",
+        "description": "Found {sensor_count} ESPHome radar sensors. Select at least one to add to the fusion.",
         "data": {
-          "host": "[%key:common::config_flow::data::host%]",
-          "username": "[%key:common::config_flow::data::username%]",
-          "password": "[%key:common::config_flow::data::password%]"
+          "sensors": "Select Sensors"
+        }
+      },
+      "configure_sensors": {
+        "title": "Configure Sensor Positions",
+        "description": "Configure position and rotation for {sensor_count} sensor(s): {sensors_list}",
+        "data": {
+          "sensor_0_floor": "Sensor 1 - Floor",
+          "sensor_0_position_x": "Sensor 1 - Position X (meters)",
+          "sensor_0_position_y": "Sensor 1 - Position Y (meters)",
+          "sensor_0_rotation_angle": "Sensor 1 - Rotation Angle (degrees)",
+          "sensor_1_floor": "Sensor 2 - Floor",
+          "sensor_1_position_x": "Sensor 2 - Position X (meters)",
+          "sensor_1_position_y": "Sensor 2 - Position Y (meters)",
+          "sensor_1_rotation_angle": "Sensor 2 - Rotation Angle (degrees)",
+          "sensor_2_floor": "Sensor 3 - Floor",
+          "sensor_2_position_x": "Sensor 3 - Position X (meters)",
+          "sensor_2_position_y": "Sensor 3 - Position Y (meters)",
+          "sensor_2_rotation_angle": "Sensor 3 - Rotation Angle (degrees)"
+        }
+      },
+      "set_timeout": {
+        "title": "Set Target Timeout",
+        "description": "Configure how long stale targets stay in cache before removal ({min_timeout}-{max_timeout} seconds, default: {default_timeout}s)",
+        "data": {
+          "target_timeout": "Target Timeout (seconds)"
+        }
+      },
+      "configure_zones": {
+        "title": "Define Zones and Blockzones",
+        "description": "Define detection zones and blockzones using YAML",
+        "data": {
+          "zones_yaml": "Zones Configuration (YAML)",
+          "blockzones_yaml": "Blockzones Configuration (YAML)"
         }
       }
     },
     "error": {
-      "cannot_connect": "[%key:common::config_flow::error::cannot_connect%]",
-      "invalid_auth": "[%key:common::config_flow::error::invalid_auth%]",
+      "no_sensors": "No sensors provided",
+      "invalid_timeout": "Target timeout must be a valid integer",
+      "invalid_timeout_range": "Target timeout must be between 1 and 60 seconds",
+      "invalid_yaml": "Invalid YAML format",
+      "invalid_zone_config": "Invalid zone configuration",
+      "invalid_auth": "Invalid authentication credentials",
+      "cannot_connect": "Cannot connect to the device",
+      "at_least_one_sensor": "Please select at least one sensor",
       "unknown": "[%key:common::config_flow::error::unknown%]"
     },
     "abort": {
-      "already_configured": "[%key:common::config_flow::abort::already_configured_device%]"
+      "already_configured": "[%key:common::config_flow::abort::already_configured_device%]",
+      "no_sensors_found": "No ESPHome radar sensors found in Home Assistant"
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "zone_presence": {
+        "name": "Zone Presence"
+      }
+    },
+    "sensor": {
+      "target_count": {
+        "name": "Target Count"
+      }
+    },
+    "switch": {
+      "blockzone_toggle": {
+        "name": "Blockzone"
+      }
     }
   }
 }
+

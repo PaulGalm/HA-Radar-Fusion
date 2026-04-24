@@ -1,20 +1,77 @@
 {
     "config": {
         "abort": {
-            "already_configured": "Device is already configured"
+            "already_configured": "Device is already configured",
+            "no_sensors_found": "No ESPHome radar sensors found in Home Assistant"
         },
         "error": {
-            "cannot_connect": "Failed to connect",
-            "invalid_auth": "Invalid authentication",
+            "at_least_one_sensor": "Please select at least one sensor",
+            "cannot_connect": "Cannot connect to the device",
+            "invalid_auth": "Invalid authentication credentials",
+            "invalid_timeout": "Target timeout must be a valid integer",
+            "invalid_timeout_range": "Target timeout must be between 1 and 60 seconds",
+            "invalid_yaml": "Invalid YAML format",
+            "invalid_zone_config": "Invalid zone configuration",
+            "no_sensors": "No sensors provided",
             "unknown": "Unexpected error"
         },
         "step": {
+            "configure_sensors": {
+                "data": {
+                    "sensor_0_floor": "Sensor 1 - Floor",
+                    "sensor_0_position_x": "Sensor 1 - Position X (meters)",
+                    "sensor_0_position_y": "Sensor 1 - Position Y (meters)",
+                    "sensor_0_rotation_angle": "Sensor 1 - Rotation Angle (degrees)",
+                    "sensor_1_floor": "Sensor 2 - Floor",
+                    "sensor_1_position_x": "Sensor 2 - Position X (meters)",
+                    "sensor_1_position_y": "Sensor 2 - Position Y (meters)",
+                    "sensor_1_rotation_angle": "Sensor 2 - Rotation Angle (degrees)",
+                    "sensor_2_floor": "Sensor 3 - Floor",
+                    "sensor_2_position_x": "Sensor 3 - Position X (meters)",
+                    "sensor_2_position_y": "Sensor 3 - Position Y (meters)",
+                    "sensor_2_rotation_angle": "Sensor 3 - Rotation Angle (degrees)"
+                },
+                "description": "Configure position and rotation for {sensor_count} sensor(s): {sensors_list}",
+                "title": "Configure Sensor Positions"
+            },
+            "configure_zones": {
+                "data": {
+                    "blockzones_yaml": "Blockzones Configuration (YAML)",
+                    "zones_yaml": "Zones Configuration (YAML)"
+                },
+                "description": "Define detection zones and blockzones using YAML",
+                "title": "Define Zones and Blockzones"
+            },
+            "set_timeout": {
+                "data": {
+                    "target_timeout": "Target Timeout (seconds)"
+                },
+                "description": "Configure how long stale targets stay in cache before removal ({min_timeout}-{max_timeout} seconds, default: {default_timeout}s)",
+                "title": "Set Target Timeout"
+            },
             "user": {
                 "data": {
-                    "host": "Host",
-                    "password": "Password",
-                    "username": "Username"
-                }
+                    "sensors": "Select Sensors"
+                },
+                "description": "Found {sensor_count} ESPHome radar sensors. Select at least one to add to the fusion.",
+                "title": "Select ESPHome Radar Sensors"
+            }
+        }
+    },
+    "entity": {
+        "binary_sensor": {
+            "zone_presence": {
+                "name": "Zone Presence"
+            }
+        },
+        "sensor": {
+            "target_count": {
+                "name": "Target Count"
+            }
+        },
+        "switch": {
+            "blockzone_toggle": {
+                "name": "Blockzone"
             }
         }
     }
