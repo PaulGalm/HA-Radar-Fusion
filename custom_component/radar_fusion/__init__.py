@@ -2,34 +2,88 @@
 
 from __future__ import annotations
 
+import logging
+
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 
-# TODO List the platforms that you want to support.
-# For your initial PR, limit it to 1 platform.
-_PLATFORMS: list[Platform] = [Platform.LIGHT]
+from .const import (
+    CONF_BLOCKZONES,
+    CONF_SENSORS,
+    CONF_TARGET_TIMEOUT,
+    CONF_ZONES,
+    PLATFORMS,
+)
+from .data import Blockzone, RadarSensor, Zone
+from .hub import RadarFusionHub
 
-# TODO Create ConfigEntry type alias with API object
-# TODO Rename type alias and update all entry annotations
-type New_NameConfigEntry = ConfigEntry[MyApi]  # noqa: F821
+_LOGGER = logging.getLogger(__name__)
+
+# Type alias for config entry with runtime data
+type RadarFusionConfigEntry = ConfigEntry[RadarFusionHub]
 
 
-# TODO Update entry annotation
-async def async_setup_entry(hass: HomeAssistant, entry: New_NameConfigEntry) -> bool:
+async def async_setup_entry(hass: HomeAssistant, entry: RadarFusionConfigEntry) -> bool:
     """Set up Radar Fusion from a config entry."""
+    _LOGGER.debug("Setting up Radar Fusion integration")
 
-    # TODO 1. Create API instance
-    # TODO 2. Validate the API connection (and authentication)
-    # TODO 3. Store an API object for your platforms to access
-    # entry.runtime_data = MyAPI(...)
+    # Parse configuration data
+    data = entry.data
 
-    await hass.config_entries.async_forward_entry_setups(entry, _PLATFORMS)
+    # Load sensors configuration
+    sensors_data = data.get(CONF_SENSORS, [])
+    sensors = [RadarSensor.from_dict(sensor_data) for sensor_data in sensors_data]
+
+    # Load zones configuration
+    zones_data = data.get(CONF_ZONES, [])
+    zones = [Zone.from_dict(zone_data) for zone_data in zones_data]
+
+    # Load blockzones configuration
+    blockzones_data = data.get(CONF_BLOCKZONES, [])
+    blockzones = [
+        Blockzone.from_dict(blockzone_data) for blockzone_data in blockzones_data
+    ]
+
+    # Get target timeout
+    target_timeout = data.get(CONF_TARGET_TIMEOUT, 5)
+
+    # Create hub coordinator
+    hub = RadarFusionHub(
+        hass=hass,
+        sensors=sensors,
+        zones=zones,
+        blockzones=blockzones,
+        target_timeout=target_timeout,
+    )
+
+    # Set up hub
+    await hub.async_setup()
+
+    # Store hub on the config entry for platform access
+    entry.runtime_data = hub
+
+    # Set up platforms
+    await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
+
+    _LOGGER.debug("Radar Fusion integration setup complete")
 
     return True
 
 
-# TODO Update entry annotation
-async def async_unload_entry(hass: HomeAssistant, entry: New_NameConfigEntry) -> bool:
+async def async_unload_entry(
+    hass: HomeAssistant, entry: RadarFusionConfigEntry
+) -> bool:
     """Unload a config entry."""
-    return await hass.config_entries.async_unload_platforms(entry, _PLATFORMS)
+    _LOGGER.debug("Unloading Radar Fusion integration")
+
+    # Unload platforms
+    if not await hass.config_entries.async_unload_platforms(entry, PLATFORMS):
+        return False
+
+    # Shutdown hub
+    if entry.runtime_data:
+        await entry.runtime_data.async_shutdown()
+
+    _LOGGER.debug("Radar Fusion integration unload complete")
+
+    return True
