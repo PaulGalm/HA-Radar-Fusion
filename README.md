@@ -270,4 +270,4 @@ For issues, feature requests, or contributions:
 
 ## License
 
-See LICENSE file for details.
+See [LICENSE](LICENSE) and [THIRD_PARTY_LICENSE](THIRD_PARTY_LICENSE) file for details.

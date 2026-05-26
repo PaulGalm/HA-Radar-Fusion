@@ -1,0 +1,23 @@
+# https://www.home-assistant.io/integrations/default_config/
+default_config:
+
+# https://www.home-assistant.io/integrations/homeassistant/
+homeassistant:
+  debug: true
+
+# https://www.home-assistant.io/integrations/logger/
+logger:
+  default: info
+  logs:
+    custom_components.radar_fusion: debug
+
+# Core components needed for development
+http:
+websocket_api:
+system_log:
+system_health:
+history:
+recorder:
+automation:
+script:
+scene:
