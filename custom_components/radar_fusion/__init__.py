@@ -158,7 +158,7 @@ async def _register_frontend(hass: HomeAssistant) -> None:
     if lovelace_data is None:
         return
 
-    resources = lovelace_data.get("resources")
+    resources = lovelace_data.resources
     if resources is None:
         return
 
