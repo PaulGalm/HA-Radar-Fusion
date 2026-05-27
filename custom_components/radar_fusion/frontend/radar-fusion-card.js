@@ -498,7 +498,7 @@ class RadarFusionCard extends HTMLElement {
       const floorplanPhysicalHeight =
         this._config.floorplan_height_mm ||
         (this._floorplanImage.height / this._floorplanImage.width) *
-          floorplanPhysicalWidth;
+        floorplanPhysicalWidth;
 
       gridSize = floorplanPhysicalWidth;
       actualGridHeight = floorplanPhysicalHeight;
