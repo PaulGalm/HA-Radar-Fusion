@@ -5,9 +5,10 @@
   "codeowners": ["@PaulGalm"],
   "config_flow": true,
   "dependencies": ["http"],
-  "documentation": "https://github.com/PaulGalm/radar_fusion",
+  "documentation": "https://github.com/PaulGalm/HA-Radar-Fusion",
   "integration_type": "service",
   "iot_class": "calculated",
+  "issue_tracker": "https://github.com/PaulGalm/HA-Radar-Fusion/issues",
   "quality_scale": "bronze",
   "requirements": [],
   "version": "1.0.7"
