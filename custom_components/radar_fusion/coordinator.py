@@ -99,6 +99,7 @@ class RadarFusionCoordinator(DataUpdateCoordinator):
 
         # Track block zone states (entity_id -> is_on)
         self._block_zone_states: dict[str, bool] = {}
+        self._sensor_listener_registered = False
 
         # Test mode target tracking
         self._test_targets: list[dict[str, Any]] | None = None
@@ -414,14 +415,16 @@ class RadarFusionCoordinator(DataUpdateCoordinator):
 
         return filtered
 
-    @callback
-    def update_block_zone_state(self, entity_id: str, is_on: bool) -> None:
-        """Update block zone state."""
-        self._block_zone_states[entity_id] = is_on
-        # Trigger immediate update
-        self.async_set_updated_data(self.data or {})
+    async def _async_setup(self) -> None:
+        """Track configured sensors for the lifetime of the config entry."""
+        entry = self.config_entry
+        if (
+            entry is None
+            or not self._tracked_entities
+            or self._sensor_listener_registered
+        ):
+            return
 
-        # Subscribe to state changes
         @callback
         def _async_state_changed(event: Event[EventStateChangedData]) -> None:
             """Handle state changes."""
@@ -439,12 +442,21 @@ class RadarFusionCoordinator(DataUpdateCoordinator):
                     # Trigger update
                     self.hass.async_create_task(self.async_request_refresh())
 
-        # Subscribe to state changes
-        async_track_state_change_event(
-            self.hass,
-            list(self._tracked_entities),
-            _async_state_changed,
+        entry.async_on_unload(
+            async_track_state_change_event(
+                self.hass,
+                list(self._tracked_entities),
+                _async_state_changed,
+            )
         )
+        self._sensor_listener_registered = True
+
+    @callback
+    def update_block_zone_state(self, entity_id: str, is_on: bool) -> None:
+        """Update block zone state."""
+        self._block_zone_states[entity_id] = is_on
+        # Trigger immediate update
+        self.async_set_updated_data(self.data or {})
 
     def get_targets_for_floor(self, floor_id: str | None) -> list[dict[str, Any]]:
         """Get filtered targets for a specific floor."""

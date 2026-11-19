@@ -213,6 +213,9 @@ Use `offset_x` and `offset_y` in card configuration to align radar coordinates w
 - Use block zones to exclude doorways, windows, etc.
 - Keep zones reasonable size - avoid massive zones
 
+Radar sensor state changes trigger a refresh even when no block zones are
+configured. Reloading the integration removes the previous sensor subscription.
+
 ### Fine-Tune Visualization
 - Adjust `zone_opacity` to match your floorplan contrast
 - Use `detection_opacity` for subtle coverage visualization
