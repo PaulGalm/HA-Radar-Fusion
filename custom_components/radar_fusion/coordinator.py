@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timedelta
 import logging
+from collections import defaultdict, deque
+from datetime import datetime, timedelta
 from typing import Any
 
 from homeassistant.config_entries import ConfigEntry
@@ -74,10 +75,14 @@ class RadarFusionCoordinator(DataUpdateCoordinator):
         self._sensor_states: dict[str, Any] = {}
         self._last_updates: dict[str, datetime] = {}
 
-        # Heatmap event lists and counts per floor
-        # Events stored as list of (timestamp, x_idx, y_idx)
-        self._events_hourly: dict[str | None, list[tuple[datetime, int, int]]] = {}
-        self._events_24h: dict[str | None, list[tuple[datetime, int, int]]] = {}
+        # Heatmap event queues and counts per floor
+        # Each event is (timestamp, x_idx, y_idx).
+        self._events_hourly: dict[str | None, deque[tuple[datetime, int, int]]] = (
+            defaultdict(deque)
+        )
+        self._events_24h: dict[str | None, deque[tuple[datetime, int, int]]] = (
+            defaultdict(deque)
+        )
 
         # Counts per bin: mapping floor_id -> {(x_idx,y_idx): count}
         self._counts_hourly: dict[str | None, dict[tuple[int, int], int]] = {}
@@ -196,8 +201,6 @@ class RadarFusionCoordinator(DataUpdateCoordinator):
         # Ensure floor entries exist
         for t in targets:
             floor = t.get("floor_id")
-            self._events_hourly.setdefault(floor, [])
-            self._events_24h.setdefault(floor, [])
             self._counts_hourly.setdefault(floor, {})
             self._counts_24h.setdefault(floor, {})
             self._counts_alltime.setdefault(floor, {})
@@ -243,18 +246,18 @@ class RadarFusionCoordinator(DataUpdateCoordinator):
         cutoff_hourly = now - timedelta(seconds=HEATMAP_HOURLY_SECONDS)
         cutoff_24h = now - timedelta(seconds=HEATMAP_24H_SECONDS)
 
-        for floor, events in list(self._events_hourly.items()):
+        for floor, events in self._events_hourly.items():
             while events and events[0][0] < cutoff_hourly:
-                _ts, xi, yi = events.pop(0)
+                _ts, xi, yi = events.popleft()
                 key = (xi, yi)
                 if key in self._counts_hourly.get(floor, {}):
                     self._counts_hourly[floor][key] -= 1
                     if self._counts_hourly[floor][key] <= 0:
                         del self._counts_hourly[floor][key]
 
-        for floor, events in list(self._events_24h.items()):
+        for floor, events in self._events_24h.items():
             while events and events[0][0] < cutoff_24h:
-                _ts, xi, yi = events.pop(0)
+                _ts, xi, yi = events.popleft()
                 key = (xi, yi)
                 if key in self._counts_24h.get(floor, {}):
                     self._counts_24h[floor][key] -= 1

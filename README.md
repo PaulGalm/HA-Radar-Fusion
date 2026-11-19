@@ -223,6 +223,7 @@ Use `offset_x` and `offset_y` in card configuration to align radar coordinates w
 - Higher `grid_size` = better performance, lower resolution
 - Lower `grid_size` = more detail, slightly higher CPU
 - Default 5000mm (5m) cells are recommended for most homes
+- The rolling heatmaps remove expired detections in arrival order. The all-time heatmap keeps its accumulated counts.
 
 ### Test Mode
 Enable test mode to:
