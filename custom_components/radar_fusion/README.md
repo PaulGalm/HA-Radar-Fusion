@@ -64,6 +64,9 @@ Modify configuration options anytime:
 - **Staleness Timeout**: Adjust target filter timeout
 - **Test Mode**: Toggle mock data generation
 
+Target age and the rolling one-hour and 24-hour heatmaps use elapsed time in UTC.
+Changing the local time zone or crossing a daylight saving transition leaves these windows intact.
+
 ## Services
 
 ### `radar_fusion.get_floor_data`

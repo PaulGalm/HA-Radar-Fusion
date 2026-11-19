@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timedelta
 import logging
+from datetime import datetime, timedelta
 from typing import Any
 
 from homeassistant.config_entries import ConfigEntry
@@ -13,6 +13,7 @@ from homeassistant.helpers.event import (
     async_track_state_change_event,
 )
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
+from homeassistant.util import dt as dt_util
 
 from .const import (
     CONF_BLOCK_ZONES,
@@ -112,12 +113,12 @@ class RadarFusionCoordinator(DataUpdateCoordinator):
             self._tracked_entities.update(sensor.get(CONF_TARGET_ENTITIES, []))
 
         # Track last heatmap persistence time
-        self._last_heatmap_persist = datetime.now()
+        self._last_heatmap_persist = dt_util.utcnow()
         self._heatmap_persist_interval = timedelta(minutes=5)  # Persist every 5 minutes
 
     async def _async_update_data(self) -> dict[str, Any]:
         """Update data."""
-        now = datetime.now()
+        now = dt_util.utcnow()
 
         # Get current sensor states
         for entity_id in self._tracked_entities:
@@ -435,7 +436,7 @@ class RadarFusionCoordinator(DataUpdateCoordinator):
             if entity_id in self._tracked_entities:
                 if new_state.state not in ("unknown", "unavailable"):
                     self._sensor_states[entity_id] = new_state.state
-                    self._last_updates[entity_id] = datetime.now()
+                    self._last_updates[entity_id] = dt_util.utcnow()
                     # Trigger update
                     self.hass.async_create_task(self.async_request_refresh())
 
@@ -609,7 +610,7 @@ class RadarFusionCoordinator(DataUpdateCoordinator):
             ]
 
             # Update heatmaps with target detections (same as real mode)
-            self._update_heatmaps(targets, datetime.now())
+            self._update_heatmaps(targets, dt_util.utcnow())
 
             # Calculate occupancy for each zone
             zones_with_occupancy = [
